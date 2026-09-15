@@ -1,0 +1,28 @@
+export const CateringRequests = {
+  slug: "catering-requests",
+  admin: { useAsTitle: "name" },
+  fields: [
+    { name: "name", type: "text", required: true },
+    { name: "email", type: "email", required: true },
+    { name: "phone", type: "text" },
+    { name: "eventDate", type: "text" },
+    { name: "eventTime", type: "text" },
+    { name: "location", type: "text" },
+    { name: "guestCount", type: "number" },
+    { name: "cateringType", type: "text" },
+    { name: "deliveryType", type: "text" },
+    { name: "eventDetails", type: "textarea" },
+    { name: "budget", type: "text" },
+    { name: "referral", type: "text" },
+    { name: "selectedMeats", type: "text" },
+    { name: "selectedSides", type: "text" },
+    { name: "selectedDesserts", type: "text" },
+    { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
+    {
+      name: "status",
+      type: "select",
+      defaultValue: "new",
+      options: ["new", "contacted", "confirmed", "closed"],
+    },
+  ],
+};

@@ -1,0 +1,42 @@
+export const Orders = {
+  slug: "orders",
+  admin: { useAsTitle: "orderNumber" },
+  fields: [
+    { name: "orderNumber", type: "text", required: true, unique: true },
+    { name: "customerName", type: "text", required: true },
+    { name: "customerEmail", type: "email", required: true },
+    { name: "customerPhone", type: "text" },
+    { name: "shippingAddress", type: "text" },
+    { name: "billingAddress", type: "text" },
+    {
+      name: "status",
+      type: "select",
+      defaultValue: "pending",
+      options: ["pending", "confirmed", "fulfilled", "cancelled"],
+    },
+    {
+      name: "paymentStatus",
+      type: "select",
+      defaultValue: "pending",
+      options: ["pending", "paid", "failed", "refunded"],
+    },
+    { name: "paymentMethod", type: "text" },
+    { name: "subtotal", type: "number", required: true },
+    { name: "tax", type: "number", defaultValue: 0 },
+    { name: "shippingCost", type: "number", defaultValue: 0 },
+    { name: "total", type: "number", required: true },
+    { name: "notes", type: "textarea" },
+    { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
+    {
+      name: "items",
+      type: "array",
+      fields: [
+        { name: "productId", type: "number" },
+        { name: "productName", type: "text", required: true },
+        { name: "quantity", type: "number", required: true },
+        { name: "priceAtTime", type: "number", required: true },
+        { name: "subtotal", type: "number", required: true },
+      ],
+    },
+  ],
+};
