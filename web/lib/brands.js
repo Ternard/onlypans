@@ -41,3 +41,7 @@ export function getBrand(slug) {
 export function isValidBrand(slug) {
   return slug in BRANDS;
 }
+
+export function getBrandByDbKey(dbKey) {
+  return Object.values(BRANDS).find((brand) => brand.dbKey === dbKey) ?? null;
+}

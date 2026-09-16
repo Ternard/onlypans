@@ -1,6 +1,7 @@
 import { getBrand, isValidBrand } from "@/lib/brands";
 import { notFound } from "next/navigation";
 import { payloadClient } from "@/lib/getPayload";
+import Image from "next/image";
 
 export default async function OurStoryPage({ params }) {
   const { brand: brandSlug } = await params;
@@ -14,19 +15,23 @@ export default async function OurStoryPage({ params }) {
     limit: 1,
   });
   const story = docs[0];
-  const imageSrc = story?.photo?.url || story?.imageUrl;
+  const imageSrc = story?.photo?.sizes?.hero?.url || story?.photo?.url || story?.imageUrl;
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
       <h1 className="text-3xl font-extrabold sm:text-4xl">Our Story</h1>
 
       {imageSrc && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={imageSrc}
-          alt={brand.name}
-          className="mt-6 aspect-16/9 w-full rounded-xl object-cover"
-        />
+        <div className="relative mt-6 aspect-16/9 w-full overflow-hidden rounded-xl">
+          <Image
+            src={imageSrc}
+            alt={brand.name}
+            fill
+            sizes="(min-width: 768px) 768px, 100vw"
+            loading="lazy"
+            className="object-cover"
+          />
+        </div>
       )}
 
       <div className="mt-6 flex flex-col gap-4 text-base leading-relaxed text-black/70 sm:text-lg">

@@ -208,6 +208,32 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -224,6 +250,8 @@ export interface Order {
   status?: ('pending' | 'confirmed' | 'fulfilled' | 'cancelled') | null;
   paymentStatus?: ('pending' | 'paid' | 'failed' | 'refunded') | null;
   paymentMethod?: string | null;
+  stripeSessionId?: string | null;
+  stripePaymentIntentId?: string | null;
   subtotal: number;
   tax?: number | null;
   shippingCost?: number | null;
@@ -337,6 +365,16 @@ export interface EventBooking {
   paymentMethod?: string | null;
   status?: ('pending' | 'confirmed' | 'cancelled') | null;
   brand?: ('only-pans' | 'pans-and-wine') | null;
+  stripeSessionId?: string | null;
+  stripePaymentIntentId?: string | null;
+  /**
+   * Internal: table holding the reserved ticket count, for release on cancel/expiry.
+   */
+  reservationTable?: string | null;
+  /**
+   * Internal: row id holding the reserved ticket count, for release on cancel/expiry.
+   */
+  reservationId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -621,6 +659,8 @@ export interface OrdersSelect<T extends boolean = true> {
   status?: T;
   paymentStatus?: T;
   paymentMethod?: T;
+  stripeSessionId?: T;
+  stripePaymentIntentId?: T;
   subtotal?: T;
   tax?: T;
   shippingCost?: T;
@@ -721,6 +761,10 @@ export interface EventBookingsSelect<T extends boolean = true> {
   paymentMethod?: T;
   status?: T;
   brand?: T;
+  stripeSessionId?: T;
+  stripePaymentIntentId?: T;
+  reservationTable?: T;
+  reservationId?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -778,6 +822,40 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

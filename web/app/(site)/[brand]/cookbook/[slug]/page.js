@@ -1,6 +1,7 @@
 import { getBrand, isValidBrand } from "@/lib/brands";
 import { notFound } from "next/navigation";
 import { payloadClient } from "@/lib/getPayload";
+import Image from "next/image";
 
 export default async function RecipePage({ params }) {
   const { brand: brandSlug, slug } = await params;
@@ -19,12 +20,16 @@ export default async function RecipePage({ params }) {
   return (
     <article className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
       {recipe.photo?.url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={recipe.photo.url}
-          alt={recipe.title}
-          className="aspect-4/3 w-full rounded-xl object-cover"
-        />
+        <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl">
+          <Image
+            src={recipe.photo?.sizes?.hero?.url || recipe.photo.url}
+            alt={recipe.title}
+            fill
+            priority
+            sizes="(min-width: 768px) 672px, 100vw"
+            className="object-cover"
+          />
+        </div>
       )}
       <h1 className="mt-6 text-3xl font-extrabold sm:text-4xl">{recipe.title}</h1>
       <p className="mt-2 text-black/60">{recipe.description}</p>

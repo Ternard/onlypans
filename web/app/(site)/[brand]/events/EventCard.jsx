@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { formatKsh } from "@/lib/currency";
 
 export default function EventCard({ event, brand }) {
@@ -12,7 +13,7 @@ export default function EventCard({ event, brand }) {
   const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const imageSrc = event.photo?.url || event.imageUrl;
+  const imageSrc = event.photo?.sizes?.thumbnail?.url || event.photo?.url || event.imageUrl;
 
   async function handlePurchase(e) {
     e.preventDefault();
@@ -28,9 +29,14 @@ export default function EventCard({ event, brand }) {
           quantity: Number(quantity),
           selectedTime: selectedTime || undefined,
           brand: brand.dbKey,
+          brandSlug: brand.slug,
         }),
       });
       const data = await res.json();
+      if (data.success && data.data?.checkoutUrl) {
+        window.location.href = data.data.checkoutUrl;
+        return;
+      }
       setStatus({ ok: data.success, message: data.message });
     } catch {
       setStatus({ ok: false, message: "Something went wrong. Try again." });
@@ -44,8 +50,16 @@ export default function EventCard({ event, brand }) {
       <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-4">
           {imageSrc && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={imageSrc} alt={event.title} className="h-20 w-20 rounded-lg object-cover" />
+            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg">
+              <Image
+                src={imageSrc}
+                alt={event.title}
+                fill
+                sizes="80px"
+                loading="lazy"
+                className="object-cover"
+              />
+            </div>
           )}
           <div>
             <h2 className="font-semibold">{event.title}</h2>

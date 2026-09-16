@@ -1,5 +1,8 @@
 import { payloadClient } from "@/lib/getPayload";
 import { apiResponse } from "@/lib/apiResponse";
+import { getBrandByDbKey } from "@/lib/brands";
+import { sendEmail, chefNotificationEmail } from "@/lib/email";
+import { cateringRequestChefEmail } from "@/lib/emailTemplates";
 
 export async function POST(request) {
   const body = await request.json();
@@ -27,6 +30,16 @@ export async function POST(request) {
       status: "new",
     },
   });
+
+  const chefEmail = chefNotificationEmail();
+  if (chefEmail) {
+    const brandInfo = getBrandByDbKey(brand) || { name: "Only Pans", accent: "#BC3737" };
+    const { subject, html } = cateringRequestChefEmail(
+      { name, email, phone, eventDate, eventTime, location, guestCount, cateringType, budget, eventDetails },
+      brandInfo
+    );
+    await sendEmail({ to: chefEmail, subject, html, replyTo: email });
+  }
 
   return apiResponse(true, "Catering request submitted successfully");
 }

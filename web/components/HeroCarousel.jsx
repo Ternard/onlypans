@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 const AUTOPLAY_MS = 5000;
 
@@ -53,21 +54,34 @@ export default function HeroCarousel({ images, accent, dark, children }) {
       onTouchEnd={onPointerUp}
       style={{ touchAction: "pan-y" }}
     >
-      {images.map((img, i) => (
-        <div
-          key={img.id ?? i}
-          aria-hidden={i !== index}
-          className="absolute inset-0 transition-opacity duration-[1400ms] ease-in-out"
-          style={{
-            opacity: i === index ? 1 : 0,
-            backgroundImage: `url(${img.imageUrl})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            transform: i === index ? "scale(1.06)" : "scale(1)",
-            transition: "opacity 1400ms ease-in-out, transform 9000ms ease-out",
-          }}
-        />
-      ))}
+      {images.map((img, i) => {
+        const isNear = Math.abs(i - index) <= 1 || (i === 0 && index === count - 1) || (i === count - 1 && index === 0);
+        return (
+          <div
+            key={img.id ?? i}
+            aria-hidden={i !== index}
+            className="absolute inset-0 transition-opacity duration-[1400ms] ease-in-out"
+            style={{
+              opacity: i === index ? 1 : 0,
+              transform: i === index ? "scale(1.06)" : "scale(1)",
+              transition: "opacity 1400ms ease-in-out, transform 9000ms ease-out",
+            }}
+          >
+            {isNear && (
+              <Image
+                src={img.imageUrl}
+                alt=""
+                fill
+                priority={i === 0}
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : "auto"}
+                sizes="100vw"
+                className="object-cover"
+              />
+            )}
+          </div>
+        );
+      })}
 
       <div
         className="absolute inset-0"

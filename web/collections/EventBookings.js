@@ -18,5 +18,17 @@ export const EventBookings = {
       options: ["pending", "confirmed", "cancelled"],
     },
     { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
+    { name: "stripeSessionId", type: "text" },
+    { name: "stripePaymentIntentId", type: "text" },
+    {
+      name: "reservationTable",
+      type: "text",
+      admin: { hidden: true, description: "Internal: table holding the reserved ticket count, for release on cancel/expiry." },
+    },
+    {
+      name: "reservationId",
+      type: "text",
+      admin: { hidden: true, description: "Internal: row id holding the reserved ticket count, for release on cancel/expiry." },
+    },
   ],
 };

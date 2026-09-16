@@ -1,6 +1,7 @@
 import { getBrand, isValidBrand } from "@/lib/brands";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { payloadClient } from "@/lib/getPayload";
 
 export default async function CookbookPage({ params }) {
@@ -53,13 +54,15 @@ export default async function CookbookPage({ params }) {
             href={`/${brand.slug}/cookbook/${recipe.slug}`}
             className="overflow-hidden rounded-xl border border-black/5 shadow-sm transition hover:shadow-md"
           >
-            <div className="aspect-4/3 w-full overflow-hidden bg-black/5">
+            <div className="relative aspect-4/3 w-full overflow-hidden bg-black/5">
               {recipe.photo?.url && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={recipe.photo.url}
+                <Image
+                  src={recipe.photo?.sizes?.card?.url || recipe.photo.url}
                   alt={recipe.title}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  loading="lazy"
+                  className="object-cover"
                 />
               )}
             </div>

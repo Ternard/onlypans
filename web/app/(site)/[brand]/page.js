@@ -32,7 +32,10 @@ export default async function BrandHome({ params }) {
 
   const images =
     heroImages.length > 0
-      ? heroImages.map((img) => ({ id: img.id, imageUrl: img.photo?.url || img.imageUrl }))
+      ? heroImages.map((img) => ({
+          id: img.id,
+          imageUrl: img.photo?.sizes?.hero?.url || img.photo?.url || img.imageUrl,
+        }))
       : FALLBACK_IMAGES.map((imageUrl, id) => ({ id, imageUrl }));
 
   return (

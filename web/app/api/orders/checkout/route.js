@@ -1,5 +1,9 @@
 import { payloadClient } from "@/lib/getPayload";
 import { apiResponse } from "@/lib/apiResponse";
+import { stripeClient } from "@/lib/stripe";
+import { getBrandByDbKey } from "@/lib/brands";
+import { sendEmail, chefNotificationEmail } from "@/lib/email";
+import { orderChefEmail } from "@/lib/emailTemplates";
 
 function generateOrderNumber() {
   return `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -9,7 +13,7 @@ export async function POST(request) {
   const body = await request.json();
   const {
     customerName, customerEmail, customerPhone,
-    shippingAddress, billingAddress, paymentMethod, notes, brand, items,
+    shippingAddress, billingAddress, notes, brand, brandSlug, items,
   } = body;
 
   if (!customerName || !customerEmail || !items?.length) {
@@ -31,7 +35,7 @@ export async function POST(request) {
       customerPhone,
       shippingAddress,
       billingAddress,
-      paymentMethod,
+      paymentMethod: "card",
       notes,
       brand,
       subtotal,
@@ -50,5 +54,50 @@ export async function POST(request) {
     },
   });
 
-  return apiResponse(true, "Order placed successfully", order);
+  const chefEmail = chefNotificationEmail();
+  if (chefEmail) {
+    const brandInfo = getBrandByDbKey(brand) || { name: "Only Pans", accent: "#BC3737" };
+    const { subject, html } = orderChefEmail(order, brandInfo);
+    await sendEmail({ to: chefEmail, subject, html, replyTo: customerEmail });
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return apiResponse(true, "Order placed. Payments are not configured yet.", order);
+  }
+
+  const origin = request.headers.get("origin") || new URL(request.url).origin;
+  const stripe = stripeClient();
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer_email: customerEmail,
+    line_items: [
+      ...items.map((item) => ({
+        quantity: item.quantity,
+        price_data: {
+          currency: "kes",
+          unit_amount: Math.round(Number(item.price) * 100),
+          product_data: { name: item.name },
+        },
+      })),
+      {
+        quantity: 1,
+        price_data: {
+          currency: "kes",
+          unit_amount: Math.round(tax * 100),
+          product_data: { name: "Tax" },
+        },
+      },
+    ],
+    metadata: { type: "order", orderId: String(order.id), orderNumber: order.orderNumber },
+    success_url: `${origin}/${brandSlug}/order-confirmation?order=${order.orderNumber}`,
+    cancel_url: `${origin}/${brandSlug}/cart`,
+  });
+
+  await payload.update({
+    collection: "orders",
+    id: order.id,
+    data: { stripeSessionId: session.id },
+  });
+
+  return apiResponse(true, "Order created", { ...order, checkoutUrl: session.url });
 }

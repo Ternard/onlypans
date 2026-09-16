@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { NAV_LINKS } from "@/lib/brands";
+import { useCart } from "@/lib/cart";
 
 export default function Nav({ brand }) {
   const [open, setOpen] = useState(false);
+  const { count } = useCart();
 
   return (
     <header
@@ -34,6 +36,31 @@ export default function Nav({ brand }) {
               />
             </Link>
           ))}
+          <Link
+            href={`/${brand.slug}/cart`}
+            aria-label="Cart"
+            className="relative flex h-9 w-9 items-center justify-center rounded-md"
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+              <path
+                d="M3 4h2l2.4 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 8H6"
+                stroke="white"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="10" cy="21" r="1.4" fill="white" />
+              <circle cx="17" cy="21" r="1.4" fill="white" />
+            </svg>
+            {count > 0 && (
+              <span
+                className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white"
+                style={{ backgroundColor: brand.accent }}
+              >
+                {count}
+              </span>
+            )}
+          </Link>
           <a
             href={`/${brand.switchTo}`}
             className="rounded-full px-4 py-1.5 text-sm font-bold shadow-md shadow-black/30 transition hover:-translate-y-0.5"
@@ -44,6 +71,31 @@ export default function Nav({ brand }) {
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
+          <Link
+            href={`/${brand.slug}/cart`}
+            aria-label="Cart"
+            className="relative flex h-9 w-9 items-center justify-center rounded-md"
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+              <path
+                d="M3 4h2l2.4 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 8H6"
+                stroke="white"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="10" cy="21" r="1.4" fill="white" />
+              <circle cx="17" cy="21" r="1.4" fill="white" />
+            </svg>
+            {count > 0 && (
+              <span
+                className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white"
+                style={{ backgroundColor: brand.accent }}
+              >
+                {count}
+              </span>
+            )}
+          </Link>
           <a
             href={brand.instagram}
             target="_blank"

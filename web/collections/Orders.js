@@ -21,6 +21,8 @@ export const Orders = {
       options: ["pending", "paid", "failed", "refunded"],
     },
     { name: "paymentMethod", type: "text" },
+    { name: "stripeSessionId", type: "text" },
+    { name: "stripePaymentIntentId", type: "text" },
     { name: "subtotal", type: "number", required: true },
     { name: "tax", type: "number", defaultValue: 0 },
     { name: "shippingCost", type: "number", defaultValue: 0 },

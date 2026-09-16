@@ -1,6 +1,7 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
+import sharp from "sharp";
 
 import { Users } from "./collections/Users.js";
 import { Products } from "./collections/Products.js";
@@ -37,6 +38,7 @@ export default buildConfig({
     OurStory,
   ],
   editor: lexicalEditor(),
+  sharp,
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URL },
   }),
