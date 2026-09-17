@@ -3,12 +3,13 @@
 import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
 
 const CartContext = createContext(null);
+const snapshotCache = new Map();
 
 function storageKey(brandSlug) {
   return `onlypans-cart-${brandSlug}`;
 }
 
-function readStore(brandSlug) {
+function parseStore(brandSlug) {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(storageKey(brandSlug));
@@ -16,6 +17,20 @@ function readStore(brandSlug) {
   } catch {
     return [];
   }
+}
+
+function readStore(brandSlug) {
+  return parseStore(brandSlug);
+}
+
+function getSnapshot(brandSlug) {
+  const parsed = parseStore(brandSlug);
+  const cached = snapshotCache.get(brandSlug);
+  if (cached && JSON.stringify(cached) === JSON.stringify(parsed)) {
+    return cached;
+  }
+  snapshotCache.set(brandSlug, parsed);
+  return parsed;
 }
 
 function writeStore(brandSlug, items) {
@@ -37,7 +52,7 @@ function subscribe(brandSlug, callback) {
 export function CartProvider({ brandSlug, children }) {
   const items = useSyncExternalStore(
     (callback) => subscribe(brandSlug, callback),
-    () => readStore(brandSlug),
+    () => getSnapshot(brandSlug),
     () => []
   );
 
