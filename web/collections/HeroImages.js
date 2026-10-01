@@ -1,6 +1,6 @@
 export const HeroImages = {
   slug: "hero-images",
-  admin: { useAsTitle: "title" },
+  admin: { group: "Website", useAsTitle: "title" },
   fields: [
     {
       name: "photo",
@@ -17,6 +17,5 @@ export const HeroImages = {
     { name: "subtitle", type: "text" },
     { name: "displayOrder", type: "number", defaultValue: 0 },
     { name: "isActive", type: "checkbox", defaultValue: true },
-    { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
   ],
 };

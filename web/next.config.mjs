@@ -2,7 +2,7 @@ import { withPayload } from "@payloadcms/next/withPayload";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  allowedDevOrigins: ["192.168.18.130"],
+  allowedDevOrigins: ["192.168.18.130", "172.26.160.1"],
   images: {
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
     formats: ["image/webp"],

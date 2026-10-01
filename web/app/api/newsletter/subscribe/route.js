@@ -1,12 +1,12 @@
 import { payloadClient } from "@/lib/getPayload";
 import { apiResponse } from "@/lib/apiResponse";
-import { getBrandByDbKey } from "@/lib/brands";
+import { SITE } from "@/lib/site";
 import { sendEmail, chefNotificationEmail } from "@/lib/email";
 import { newsletterSignupChefEmail } from "@/lib/emailTemplates";
 
 export async function POST(request) {
   const body = await request.json();
-  const { email, brand } = body;
+  const { email } = body;
 
   if (!email) {
     return apiResponse(false, "Email is required");
@@ -23,12 +23,11 @@ export async function POST(request) {
     return apiResponse(false, "This email is already subscribed");
   }
 
-  await payload.create({ collection: "newsletter-subscribers", data: { email, brand } });
+  await payload.create({ collection: "newsletter-subscribers", data: { email } });
 
   const chefEmail = chefNotificationEmail();
   if (chefEmail) {
-    const brandInfo = getBrandByDbKey(brand) || { name: "Only Pans", accent: "#BC3737" };
-    const { subject, html } = newsletterSignupChefEmail({ email }, brandInfo);
+    const { subject, html } = newsletterSignupChefEmail({ email }, SITE);
     await sendEmail({ to: chefEmail, subject, html });
   }
 

@@ -1,6 +1,6 @@
 export const ContactMessages = {
   slug: "contact-messages",
-  admin: { useAsTitle: "email" },
+  admin: { group: "Requests", useAsTitle: "email" },
   fields: [
     { name: "firstName", type: "text", required: true },
     { name: "lastName", type: "text" },
@@ -8,7 +8,6 @@ export const ContactMessages = {
     { name: "phoneNumber", type: "text" },
     { name: "subject", type: "text" },
     { name: "message", type: "textarea", required: true },
-    { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
     {
       name: "status",
       type: "select",

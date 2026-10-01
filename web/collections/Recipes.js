@@ -1,6 +1,6 @@
 export const Recipes = {
   slug: "recipes",
-  admin: { useAsTitle: "title" },
+  admin: { group: "Website", useAsTitle: "title" },
   fields: [
     { name: "title", type: "text", required: true },
     { name: "slug", type: "text", required: true, unique: true },
@@ -18,7 +18,6 @@ export const Recipes = {
       type: "array",
       fields: [{ name: "step", type: "textarea", required: true }],
     },
-    { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
     { name: "isPublished", type: "checkbox", defaultValue: true },
   ],
 };

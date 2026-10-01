@@ -1,7 +1,6 @@
 import { payloadClient } from "@/lib/getPayload";
 import { apiResponse } from "@/lib/apiResponse";
-import { stripeClient } from "@/lib/stripe";
-import { notifyBookingConfirmed } from "@/lib/notifications";
+import { darajaEnabled, normalizePhone, stkPush } from "@/lib/daraja";
 
 function generateBookingNumber() {
   return `BK-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -34,9 +33,9 @@ export async function POST(request, { params }) {
   const body = await request.json();
   const {
     customerName, customerEmail, customerPhone, selectedTime,
-    paymentMethod = "CREDIT_CARD", brand = "only-pans", brandSlug,
   } = body;
   const quantity = Number(body.quantity);
+  const mpesaPhone = normalizePhone(customerPhone);
 
   if (
     !customerName || !customerEmail ||
@@ -45,6 +44,9 @@ export async function POST(request, { params }) {
   ) {
     return apiResponse(false, "Missing or invalid fields: customerName, customerEmail, quantity");
   }
+
+  if (!darajaEnabled()) return apiResponse(false, "M-Pesa is not available right now.");
+  if (!mpesaPhone) return apiResponse(false, "Enter a valid Safaricom number, e.g. 0712345678.");
 
   const payload = await payloadClient();
   const pool = payload.db.pool;
@@ -83,7 +85,6 @@ export async function POST(request, { params }) {
   }
 
   const totalAmount = Number(event.ticketPrice) * quantity;
-  const stripeEnabled = Boolean(process.env.STRIPE_SECRET_KEY);
 
   try {
     const booking = await payload.create({
@@ -97,47 +98,18 @@ export async function POST(request, { params }) {
         selectedTime: selectedTime || null,
         quantity,
         totalAmount,
-        paymentMethod,
-        status: stripeEnabled ? "pending" : "confirmed",
-        brand,
+        paymentMethod: "mpesa",
+        status: "pending",
         reservationTable: reservation?.table ?? null,
         reservationId: reservation?.id != null ? String(reservation.id) : null,
       },
     });
 
-    if (!stripeEnabled) {
-      await notifyBookingConfirmed(booking, event);
-      return apiResponse(true, "Tickets purchased successfully", booking);
-    }
-
-    const origin = request.headers.get("origin") || new URL(request.url).origin;
-    const stripe = stripeClient();
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      customer_email: customerEmail,
-      expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
-      line_items: [
-        {
-          quantity,
-          price_data: {
-            currency: "kes",
-            unit_amount: Math.round(Number(event.ticketPrice) * 100),
-            product_data: { name: `${event.title}${selectedTime ? ` (${selectedTime})` : ""}` },
-          },
-        },
-      ],
-      metadata: { type: "event_booking", bookingId: String(booking.id) },
-      success_url: `${origin}/${brandSlug}/order-confirmation?booking=${booking.bookingNumber}`,
-      cancel_url: `${origin}/${brandSlug}/events`,
+    const { CheckoutRequestID } = await stkPush({
+      phone: mpesaPhone, amount: totalAmount, reference: booking.bookingNumber, description: "Tickets",
     });
-
-    await payload.update({
-      collection: "event-bookings",
-      id: booking.id,
-      data: { stripeSessionId: session.id },
-    });
-
-    return apiResponse(true, "Redirecting to payment", { ...booking, checkoutUrl: session.url });
+    await payload.update({ collection: "event-bookings", id: booking.id, data: { mpesaCheckoutRequestId: CheckoutRequestID } });
+    return apiResponse(true, "Check your phone to complete payment", { ...booking, mpesa: true });
   } catch {
     if (reservation) {
       await releaseReservation(pool, reservation.table, reservation.id, quantity);

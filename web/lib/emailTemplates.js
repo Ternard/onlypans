@@ -1,6 +1,6 @@
 import { formatKsh } from "@/lib/currency";
 
-function shell(title, bodyHtml, accent = "#BC3737") {
+function shell(title, bodyHtml, accent = "#a4636a") {
   return `
     <div style="font-family: -apple-system, Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #1a1a1a;">
       <h2 style="color: ${accent}; margin-bottom: 4px;">${title}</h2>

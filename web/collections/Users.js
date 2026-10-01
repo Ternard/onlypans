@@ -1,6 +1,6 @@
 export const Users = {
   slug: "users",
   auth: true,
-  admin: { useAsTitle: "email" },
+  admin: { group: "Admin", useAsTitle: "email" },
   fields: [],
 };

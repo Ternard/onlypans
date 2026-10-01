@@ -1,10 +1,8 @@
-import { getBrandByDbKey } from "@/lib/brands";
+import { SITE as brand } from "@/lib/site";
 import { sendEmail, chefNotificationEmail } from "@/lib/email";
 import { orderChefEmail, orderCustomerEmail, bookingChefEmail, bookingCustomerEmail } from "@/lib/emailTemplates";
 
 export async function notifyOrderPaid(order) {
-  const brand = getBrandByDbKey(order.brand) || { name: "Only Pans", accent: "#BC3737" };
-
   const customer = orderCustomerEmail(order, brand);
   await sendEmail({ to: order.customerEmail, subject: customer.subject, html: customer.html });
 
@@ -16,8 +14,6 @@ export async function notifyOrderPaid(order) {
 }
 
 export async function notifyBookingConfirmed(booking, event) {
-  const brand = getBrandByDbKey(booking.brand) || { name: "Only Pans", accent: "#BC3737" };
-
   const customer = bookingCustomerEmail(booking, event, brand);
   await sendEmail({ to: booking.customerEmail, subject: customer.subject, html: customer.html });
 

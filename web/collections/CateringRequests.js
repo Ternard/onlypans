@@ -1,7 +1,8 @@
 export const CateringRequests = {
   slug: "catering-requests",
-  admin: { useAsTitle: "name" },
+  admin: { group: "Requests", useAsTitle: "name", defaultColumns: ["name", "eventDate", "guestCount", "status", "createdAt"] },
   fields: [
+    { name: "makeQuote", type: "ui", admin: { position: "sidebar", components: { Field: "/components/MakeQuote.jsx#default" } } },
     { name: "name", type: "text", required: true },
     { name: "email", type: "email", required: true },
     { name: "phone", type: "text" },
@@ -17,7 +18,6 @@ export const CateringRequests = {
     { name: "selectedMeats", type: "text" },
     { name: "selectedSides", type: "text" },
     { name: "selectedDesserts", type: "text" },
-    { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
     {
       name: "status",
       type: "select",

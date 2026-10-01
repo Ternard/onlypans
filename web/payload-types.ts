@@ -79,8 +79,10 @@ export interface Config {
     'site-settings': SiteSetting;
     media: Media;
     recipes: Recipe;
-    'cookbook-downloads': CookbookDownload;
-    'our-story': OurStory;
+    gallery: Gallery;
+    quotes: Quote;
+    'menu-items': MenuItem;
+    services: Service;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -100,8 +102,10 @@ export interface Config {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     recipes: RecipesSelect<false> | RecipesSelect<true>;
-    'cookbook-downloads': CookbookDownloadsSelect<false> | CookbookDownloadsSelect<true>;
-    'our-story': OurStorySelect<false> | OurStorySelect<true>;
+    gallery: GallerySelect<false> | GallerySelect<true>;
+    quotes: QuotesSelect<false> | QuotesSelect<true>;
+    'menu-items': MenuItemsSelect<false> | MenuItemsSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -184,8 +188,10 @@ export interface Product {
    */
   imageUrl?: string | null;
   stockQuantity?: number | null;
-  category?: string | null;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
+  /**
+   * Which Shop tab this item appears under.
+   */
+  category: 'wearables' | 'cookware' | 'ebooks';
   isAvailable?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -250,14 +256,13 @@ export interface Order {
   status?: ('pending' | 'confirmed' | 'fulfilled' | 'cancelled') | null;
   paymentStatus?: ('pending' | 'paid' | 'failed' | 'refunded') | null;
   paymentMethod?: string | null;
-  stripeSessionId?: string | null;
-  stripePaymentIntentId?: string | null;
+  mpesaCheckoutRequestId?: string | null;
+  mpesaReceipt?: string | null;
   subtotal: number;
   tax?: number | null;
   shippingCost?: number | null;
   total: number;
   notes?: string | null;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
   items?:
     | {
         productId?: number | null;
@@ -292,7 +297,6 @@ export interface CateringRequest {
   selectedMeats?: string | null;
   selectedSides?: string | null;
   selectedDesserts?: string | null;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
   status?: ('new' | 'contacted' | 'confirmed' | 'closed') | null;
   updatedAt: string;
   createdAt: string;
@@ -309,7 +313,6 @@ export interface ContactMessage {
   phoneNumber?: string | null;
   subject?: string | null;
   message: string;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
   status?: ('new' | 'read' | 'replied') | null;
   updatedAt: string;
   createdAt: string;
@@ -321,6 +324,18 @@ export interface ContactMessage {
 export interface Event {
   id: number;
   title: string;
+  /**
+   * Shown as 'Hosted by'. Change it when listing tickets on behalf of another organizer.
+   */
+  organizer?: string | null;
+  /**
+   * Private: phone/email of the outside seller to pay out. Never shown on the site.
+   */
+  sellerContact?: string | null;
+  /**
+   * Untick to hide this event from the Shop without deleting it.
+   */
+  isPublished?: boolean | null;
   description?: string | null;
   eventDate: string;
   /**
@@ -344,7 +359,6 @@ export interface Event {
    * Used only if no photo is uploaded above.
    */
   imageUrl?: string | null;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -364,9 +378,8 @@ export interface EventBooking {
   totalAmount: number;
   paymentMethod?: string | null;
   status?: ('pending' | 'confirmed' | 'cancelled') | null;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
-  stripeSessionId?: string | null;
-  stripePaymentIntentId?: string | null;
+  mpesaCheckoutRequestId?: string | null;
+  mpesaReceipt?: string | null;
   /**
    * Internal: table holding the reserved ticket count, for release on cancel/expiry.
    */
@@ -396,7 +409,6 @@ export interface HeroImage {
   subtitle?: string | null;
   displayOrder?: number | null;
   isActive?: boolean | null;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -407,7 +419,6 @@ export interface HeroImage {
 export interface NewsletterSubscriber {
   id: number;
   email: string;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
   isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -420,7 +431,6 @@ export interface SiteSetting {
   id: number;
   settingKey: string;
   settingValue: string;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -448,31 +458,18 @@ export interface Recipe {
         id?: string | null;
       }[]
     | null;
-  brand?: ('only-pans' | 'pans-and-wine') | null;
   isPublished?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Photos for the Gallery page.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "cookbook-downloads".
+ * via the `definition` "gallery".
  */
-export interface CookbookDownload {
+export interface Gallery {
   id: number;
-  title: string;
-  file: number | Media;
-  brand: 'only-pans' | 'pans-and-wine';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "our-story".
- */
-export interface OurStory {
-  id: number;
-  brand: 'only-pans' | 'pans-and-wine';
-  body?: string | null;
   /**
    * Upload a photo, or leave empty and use the Image URL field below.
    */
@@ -481,6 +478,133 @@ export interface OurStory {
    * Used only if no photo is uploaded above.
    */
   imageUrl?: string | null;
+  /**
+   * e.g. Beckham & Ted's Graduation Dinner
+   */
+  caption?: string | null;
+  displayOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Build a quotation, then use 'Open printable quotation' to print it or save it as a PDF.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes".
+ */
+export interface Quote {
+  id: number;
+  status?: ('draft' | 'sent' | 'accepted' | 'declined') | null;
+  /**
+   * Automatic. Change it if you like.
+   */
+  quoteNumber?: string | null;
+  /**
+   * Sum of all rows, automatic.
+   */
+  total?: number | null;
+  /**
+   * Optional: pick a customer request and save — their details, date, guests and menu are filled in for you.
+   */
+  cateringRequest?: (number | null) | CateringRequest;
+  /**
+   * e.g. Beckham & Ted's Graduation Dinner
+   */
+  title?: string | null;
+  /**
+   * Filled from the request if left empty.
+   */
+  customerName?: string | null;
+  customerEmail?: string | null;
+  customerPhone?: string | null;
+  /**
+   * e.g. 14 December 2026
+   */
+  eventDate?: string | null;
+  /**
+   * Number of guests
+   */
+  pax?: number | null;
+  /**
+   * Click 'Add Item' for each line. Qty 1 + a price = a lump sum.
+   */
+  items?:
+    | {
+        /**
+         * Optional: pick a dish to fill in the description and price.
+         */
+        menuItem?: (number | null) | MenuItem;
+        description?: string | null;
+        qty?: number | null;
+        /**
+         * Price each (KSh)
+         */
+        unitPrice?: number | null;
+        /**
+         * Automatic
+         */
+        amount?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  notes?: string | null;
+  /**
+   * Optional: ingredients to buy. Download it from the sidebar.
+   */
+  shoppingList?:
+    | {
+        /**
+         * e.g. Rice 20kg
+         */
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The dishes customers can pick on the Services booking form. Also pickable when building a quote.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-items".
+ */
+export interface MenuItem {
+  id: number;
+  name: string;
+  category: 'mains' | 'sides' | 'extras';
+  /**
+   * Optional price per person or per item (KSh). Pre-fills quotes; never shown on the site.
+   */
+  price?: number | null;
+  /**
+   * Untick to hide from the booking form without deleting.
+   */
+  isAvailable?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The service cards on the Services page. Lowest 'Display order' shows first.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  text: string;
+  points?:
+    | {
+        point: string;
+        id?: string | null;
+      }[]
+    | null;
+  displayOrder?: number | null;
+  /**
+   * Untick to hide from the site without deleting.
+   */
+  isPublished?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -557,12 +681,20 @@ export interface PayloadLockedDocument {
         value: number | Recipe;
       } | null)
     | ({
-        relationTo: 'cookbook-downloads';
-        value: number | CookbookDownload;
+        relationTo: 'gallery';
+        value: number | Gallery;
       } | null)
     | ({
-        relationTo: 'our-story';
-        value: number | OurStory;
+        relationTo: 'quotes';
+        value: number | Quote;
+      } | null)
+    | ({
+        relationTo: 'menu-items';
+        value: number | MenuItem;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -640,7 +772,6 @@ export interface ProductsSelect<T extends boolean = true> {
   imageUrl?: T;
   stockQuantity?: T;
   category?: T;
-  brand?: T;
   isAvailable?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -659,14 +790,13 @@ export interface OrdersSelect<T extends boolean = true> {
   status?: T;
   paymentStatus?: T;
   paymentMethod?: T;
-  stripeSessionId?: T;
-  stripePaymentIntentId?: T;
+  mpesaCheckoutRequestId?: T;
+  mpesaReceipt?: T;
   subtotal?: T;
   tax?: T;
   shippingCost?: T;
   total?: T;
   notes?: T;
-  brand?: T;
   items?:
     | T
     | {
@@ -700,7 +830,6 @@ export interface CateringRequestsSelect<T extends boolean = true> {
   selectedMeats?: T;
   selectedSides?: T;
   selectedDesserts?: T;
-  brand?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -716,7 +845,6 @@ export interface ContactMessagesSelect<T extends boolean = true> {
   phoneNumber?: T;
   subject?: T;
   message?: T;
-  brand?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -727,6 +855,9 @@ export interface ContactMessagesSelect<T extends boolean = true> {
  */
 export interface EventsSelect<T extends boolean = true> {
   title?: T;
+  organizer?: T;
+  sellerContact?: T;
+  isPublished?: T;
   description?: T;
   eventDate?: T;
   timeOptions?:
@@ -741,7 +872,6 @@ export interface EventsSelect<T extends boolean = true> {
   availableTickets?: T;
   photo?: T;
   imageUrl?: T;
-  brand?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -760,9 +890,8 @@ export interface EventBookingsSelect<T extends boolean = true> {
   totalAmount?: T;
   paymentMethod?: T;
   status?: T;
-  brand?: T;
-  stripeSessionId?: T;
-  stripePaymentIntentId?: T;
+  mpesaCheckoutRequestId?: T;
+  mpesaReceipt?: T;
   reservationTable?: T;
   reservationId?: T;
   updatedAt?: T;
@@ -779,7 +908,6 @@ export interface HeroImagesSelect<T extends boolean = true> {
   subtitle?: T;
   displayOrder?: T;
   isActive?: T;
-  brand?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -789,7 +917,6 @@ export interface HeroImagesSelect<T extends boolean = true> {
  */
 export interface NewsletterSubscribersSelect<T extends boolean = true> {
   email?: T;
-  brand?: T;
   isActive?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -801,7 +928,6 @@ export interface NewsletterSubscribersSelect<T extends boolean = true> {
 export interface SiteSettingsSelect<T extends boolean = true> {
   settingKey?: T;
   settingValue?: T;
-  brand?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -880,31 +1006,84 @@ export interface RecipesSelect<T extends boolean = true> {
         step?: T;
         id?: T;
       };
-  brand?: T;
   isPublished?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "cookbook-downloads_select".
+ * via the `definition` "gallery_select".
  */
-export interface CookbookDownloadsSelect<T extends boolean = true> {
-  title?: T;
-  file?: T;
-  brand?: T;
+export interface GallerySelect<T extends boolean = true> {
+  photo?: T;
+  imageUrl?: T;
+  caption?: T;
+  displayOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "our-story_select".
+ * via the `definition` "quotes_select".
  */
-export interface OurStorySelect<T extends boolean = true> {
-  brand?: T;
-  body?: T;
-  photo?: T;
-  imageUrl?: T;
+export interface QuotesSelect<T extends boolean = true> {
+  status?: T;
+  quoteNumber?: T;
+  total?: T;
+  cateringRequest?: T;
+  title?: T;
+  customerName?: T;
+  customerEmail?: T;
+  customerPhone?: T;
+  eventDate?: T;
+  pax?: T;
+  items?:
+    | T
+    | {
+        menuItem?: T;
+        description?: T;
+        qty?: T;
+        unitPrice?: T;
+        amount?: T;
+        id?: T;
+      };
+  notes?: T;
+  shoppingList?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-items_select".
+ */
+export interface MenuItemsSelect<T extends boolean = true> {
+  name?: T;
+  category?: T;
+  price?: T;
+  isAvailable?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  text?: T;
+  points?:
+    | T
+    | {
+        point?: T;
+        id?: T;
+      };
+  displayOrder?: T;
+  isPublished?: T;
   updatedAt?: T;
   createdAt?: T;
 }

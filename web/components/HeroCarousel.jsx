@@ -47,7 +47,7 @@ export default function HeroCarousel({ images, accent, dark, children }) {
 
   return (
     <div
-      className="relative isolate flex min-h-[80vh] flex-col items-start justify-center overflow-hidden text-white sm:min-h-[85vh]"
+      className="slats relative isolate flex min-h-[80vh] flex-col items-start justify-center overflow-hidden text-white sm:min-h-[85vh]"
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onTouchStart={onPointerDown}
@@ -96,12 +96,12 @@ export default function HeroCarousel({ images, accent, dark, children }) {
         }}
       />
 
-      <div className="relative z-10 flex flex-col items-start gap-4 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
         {children}
       </div>
 
       {count > 1 && (
-        <div className="relative z-10 flex gap-2 px-4 pb-6 sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl gap-2 px-4 pb-8 sm:px-6 lg:px-8">
           {images.map((_, i) => (
             <button
               key={i}

@@ -1,6 +1,6 @@
 export const Products = {
   slug: "products",
-  admin: { useAsTitle: "name" },
+  admin: { group: "Shop", useAsTitle: "name" },
   fields: [
     { name: "name", type: "text", required: true },
     { name: "description", type: "textarea" },
@@ -17,11 +17,17 @@ export const Products = {
       admin: { description: "Used only if no photo is uploaded above." },
     },
     { name: "stockQuantity", type: "number", defaultValue: 0 },
-    { name: "category", type: "text" },
     {
-      name: "brand",
+      name: "category",
       type: "select",
-      options: ["only-pans", "pans-and-wine"],
+      required: true,
+      defaultValue: "wearables",
+      options: [
+        { label: "Wearables", value: "wearables" },
+        { label: "Cookware", value: "cookware" },
+        { label: "eBooks & Recipes", value: "ebooks" },
+      ],
+      admin: { description: "Which Shop tab this item appears under." },
     },
     { name: "isAvailable", type: "checkbox", defaultValue: true },
   ],

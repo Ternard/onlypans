@@ -1,6 +1,6 @@
 export const EventBookings = {
   slug: "event-bookings",
-  admin: { useAsTitle: "bookingNumber" },
+  admin: { group: "Shop", useAsTitle: "bookingNumber" },
   fields: [
     { name: "event", type: "relationship", relationTo: "events", required: true },
     { name: "bookingNumber", type: "text", required: true, unique: true },
@@ -17,9 +17,8 @@ export const EventBookings = {
       defaultValue: "pending",
       options: ["pending", "confirmed", "cancelled"],
     },
-    { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
-    { name: "stripeSessionId", type: "text" },
-    { name: "stripePaymentIntentId", type: "text" },
+    { name: "mpesaCheckoutRequestId", type: "text", index: true },
+    { name: "mpesaReceipt", type: "text" },
     {
       name: "reservationTable",
       type: "text",

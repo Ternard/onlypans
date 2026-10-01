@@ -12,7 +12,7 @@ function resendClient() {
 
 // Resend's shared sandbox sender — works immediately without owning a domain.
 // Swap for a verified address (e.g. orders@yourdomain.com) once a domain is set up.
-const DEFAULT_FROM = "Only Pans <onboarding@resend.dev>";
+const DEFAULT_FROM = "Pans & Wine <onboarding@resend.dev>";
 
 export async function sendEmail({ to, subject, html, replyTo }) {
   const resend = resendClient();

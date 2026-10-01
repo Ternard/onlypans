@@ -1,6 +1,6 @@
 import { payloadClient } from "@/lib/getPayload";
 import { apiResponse } from "@/lib/apiResponse";
-import { getBrandByDbKey } from "@/lib/brands";
+import { SITE } from "@/lib/site";
 import { sendEmail, chefNotificationEmail } from "@/lib/email";
 import { cateringRequestChefEmail } from "@/lib/emailTemplates";
 
@@ -9,7 +9,7 @@ export async function POST(request) {
   const {
     name, email, phone, eventDate, eventTime, location, guestCount,
     cateringType, deliveryType, eventDetails, budget, referral,
-    selectedMeats, selectedSides, selectedDesserts, brand,
+    selectedMeats, selectedSides, selectedDesserts,
   } = body;
 
   if (!name || !email) {
@@ -26,17 +26,15 @@ export async function POST(request) {
       selectedMeats: Array.isArray(selectedMeats) ? selectedMeats.join(", ") : selectedMeats,
       selectedSides: Array.isArray(selectedSides) ? selectedSides.join(", ") : selectedSides,
       selectedDesserts: Array.isArray(selectedDesserts) ? selectedDesserts.join(", ") : selectedDesserts,
-      brand,
       status: "new",
     },
   });
 
   const chefEmail = chefNotificationEmail();
   if (chefEmail) {
-    const brandInfo = getBrandByDbKey(brand) || { name: "Only Pans", accent: "#BC3737" };
     const { subject, html } = cateringRequestChefEmail(
       { name, email, phone, eventDate, eventTime, location, guestCount, cateringType, budget, eventDetails },
-      brandInfo
+      SITE
     );
     await sendEmail({ to: chefEmail, subject, html, replyTo: email });
   }

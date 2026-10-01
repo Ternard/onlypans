@@ -1,13 +1,95 @@
 @import "tailwindcss";
 
-:root {
-  --accent: #BC3737;
-  --accent-dark: #8f2929;
-  --dark: #1a1a1a;
+/* Palette lifted from the brand invoice + shopping list:
+   espresso slats, gingham brown, dusty-rose type, sand band. */
+@theme {
+  --color-espresso: #1c110c;
+  --color-cocoa: #35201a;
+  --color-brown: #6e3b2a;
+  --color-rose: #c4868b;
+  --color-rose-deep: #a4636a;
+  --color-sand: #efe4d9;
+  --color-cream: #faf6f1;
+  --color-ink: #2a1a13;
+
+  --font-display: var(--font-spartan), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
 }
 
+@layer base {
 body {
-  color: var(--dark);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", "Noto Sans", Arial, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+}
+
+@layer components {
+/* Brown gingham, as on the invoice border. */
+.gingham {
+  background-color: #efe4d9;
+  background-image:
+    linear-gradient(90deg, rgb(110 59 42 / 0.55) 50%, transparent 50%),
+    linear-gradient(rgb(110 59 42 / 0.55) 50%, transparent 50%);
+  background-size: 24px 24px;
+}
+
+/* Dark wooden slats with a diagonal shadow, as on the shopping list. */
+.slats {
+  background-color: #1c110c;
+  background-image:
+    linear-gradient(115deg, rgb(10 6 4 / 0.75) 0 35%, transparent 35%),
+    repeating-linear-gradient(90deg, #4a2b1f 0 16px, #140c08 16px 24px);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-rose-deep);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.8rem 1.6rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: transform 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:disabled { opacity: 0.5; transform: none; }
+.btn-primary { background: var(--color-rose); color: var(--color-espresso); }
+.btn-primary:hover { background: #d29a9f; }
+.btn-dark { background: var(--color-espresso); color: var(--color-cream); }
+.btn-dark:hover { background: var(--color-brown); }
+.btn-ghost { border: 1px solid currentColor; }
+.btn-ghost:hover { background: rgb(255 255 255 / 0.08); }
+
+.field {
+  border-radius: 0.6rem;
+  border: 1px solid rgb(42 26 19 / 0.15);
+  background: white;
+  padding: 0.65rem 0.85rem;
+  font-size: 1rem;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field:focus {
+  border-color: var(--color-rose-deep);
+  box-shadow: 0 0 0 3px rgb(196 134 139 / 0.25);
+}
 }

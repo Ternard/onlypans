@@ -4,11 +4,12 @@ import { useState } from "react";
 import Image from "next/image";
 import { formatKsh } from "@/lib/currency";
 import { useCart } from "@/lib/cart";
+import { imageOf } from "@/lib/site";
 
-export default function ProductCard({ product, accent }) {
+export default function ProductCard({ product }) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
-  const imageSrc = product.photo?.sizes?.card?.url || product.photo?.url || product.imageUrl;
+  const imageSrc = imageOf(product, "card");
 
   function handleAdd() {
     addItem(product, 1);
@@ -17,33 +18,29 @@ export default function ProductCard({ product, accent }) {
   }
 
   return (
-    <div className="group overflow-hidden rounded-xl border border-black/5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="relative aspect-4/3 w-full overflow-hidden bg-black/5">
+    <div className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-ink/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className="relative aspect-square w-full overflow-hidden bg-sand">
         {imageSrc && (
           <Image
             src={imageSrc}
             alt={product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            loading="lazy"
-            className="object-cover transition duration-500 group-hover:scale-110"
+            className="object-cover transition duration-500 group-hover:scale-105"
           />
         )}
       </div>
-      <div className="p-4">
-        <h3 className="font-semibold">{product.name}</h3>
-        <p className="mt-1 text-sm text-black/60 line-clamp-2">{product.description}</p>
-        <div className="mt-2 flex items-center justify-between gap-3">
-          <p className="text-lg font-extrabold" style={{ color: accent }}>
-            {formatKsh(product.price)}
-          </p>
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="text-lg font-bold">{product.name}</h3>
+        <p className="mt-1 line-clamp-2 flex-1 text-sm text-ink/60">{product.description}</p>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <p className="font-display text-lg font-semibold text-rose-deep">{formatKsh(product.price)}</p>
           <button
             type="button"
             onClick={handleAdd}
-            className="shrink-0 rounded-full px-4 py-2 text-sm font-bold text-white transition hover:-translate-y-0.5"
-            style={{ backgroundColor: added ? "#16a34a" : accent }}
+            className={`btn px-4 py-2 text-xs ${added ? "bg-green-700 text-white" : "btn-dark"}`}
           >
-            {added ? "Added" : "Add to Cart"}
+            {added ? "Added ✓" : "Add to cart"}
           </button>
         </div>
       </div>

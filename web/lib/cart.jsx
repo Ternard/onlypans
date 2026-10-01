@@ -3,58 +3,45 @@
 import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
 
 const CartContext = createContext(null);
-const snapshotCache = new Map();
+const STORAGE_KEY = "pansandwine-cart";
+let snapshotCache = null;
 
-function storageKey(brandSlug) {
-  return `onlypans-cart-${brandSlug}`;
-}
-
-function parseStore(brandSlug) {
+function readStore() {
   if (typeof window === "undefined") return [];
   try {
-    const raw = window.localStorage.getItem(storageKey(brandSlug));
+    const raw = window.localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
   }
 }
 
-function readStore(brandSlug) {
-  return parseStore(brandSlug);
-}
-
-function getSnapshot(brandSlug) {
-  const parsed = parseStore(brandSlug);
-  const cached = snapshotCache.get(brandSlug);
-  if (cached && JSON.stringify(cached) === JSON.stringify(parsed)) {
-    return cached;
+function getSnapshot() {
+  const parsed = readStore();
+  if (snapshotCache && JSON.stringify(snapshotCache) === JSON.stringify(parsed)) {
+    return snapshotCache;
   }
-  snapshotCache.set(brandSlug, parsed);
+  snapshotCache = parsed;
   return parsed;
 }
 
-function writeStore(brandSlug, items) {
+function writeStore(items) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(storageKey(brandSlug), JSON.stringify(items));
-  window.dispatchEvent(new CustomEvent(storageKey(brandSlug)));
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  window.dispatchEvent(new CustomEvent(STORAGE_KEY));
 }
 
-function subscribe(brandSlug, callback) {
-  const key = storageKey(brandSlug);
-  window.addEventListener(key, callback);
+function subscribe(callback) {
+  window.addEventListener(STORAGE_KEY, callback);
   window.addEventListener("storage", callback);
   return () => {
-    window.removeEventListener(key, callback);
+    window.removeEventListener(STORAGE_KEY, callback);
     window.removeEventListener("storage", callback);
   };
 }
 
-export function CartProvider({ brandSlug, children }) {
-  const items = useSyncExternalStore(
-    (callback) => subscribe(brandSlug, callback),
-    () => getSnapshot(brandSlug),
-    () => []
-  );
+export function CartProvider({ children }) {
+  const items = useSyncExternalStore(subscribe, getSnapshot, () => []);
 
   const api = useMemo(
     () => ({
@@ -62,7 +49,7 @@ export function CartProvider({ brandSlug, children }) {
       count: items.reduce((sum, item) => sum + item.quantity, 0),
       subtotal: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
       addItem(product, quantity = 1) {
-        const current = readStore(brandSlug);
+        const current = readStore();
         const existing = current.find((item) => item.productId === product.id);
         const next = existing
           ? current.map((item) =>
@@ -74,24 +61,24 @@ export function CartProvider({ brandSlug, children }) {
               ...current,
               { productId: product.id, name: product.name, price: Number(product.price), quantity },
             ];
-        writeStore(brandSlug, next);
+        writeStore(next);
       },
       setQuantity(productId, quantity) {
-        const current = readStore(brandSlug);
+        const current = readStore();
         const next =
           quantity <= 0
             ? current.filter((item) => item.productId !== productId)
             : current.map((item) => (item.productId === productId ? { ...item, quantity } : item));
-        writeStore(brandSlug, next);
+        writeStore(next);
       },
       removeItem(productId) {
-        writeStore(brandSlug, readStore(brandSlug).filter((item) => item.productId !== productId));
+        writeStore(readStore().filter((item) => item.productId !== productId));
       },
       clear() {
-        writeStore(brandSlug, []);
+        writeStore([]);
       },
     }),
-    [items, brandSlug]
+    [items]
   );
 
   return <CartContext.Provider value={api}>{children}</CartContext.Provider>;

@@ -1,6 +1,6 @@
 export const Orders = {
   slug: "orders",
-  admin: { useAsTitle: "orderNumber" },
+  admin: { group: "Shop", useAsTitle: "orderNumber" },
   fields: [
     { name: "orderNumber", type: "text", required: true, unique: true },
     { name: "customerName", type: "text", required: true },
@@ -21,14 +21,13 @@ export const Orders = {
       options: ["pending", "paid", "failed", "refunded"],
     },
     { name: "paymentMethod", type: "text" },
-    { name: "stripeSessionId", type: "text" },
-    { name: "stripePaymentIntentId", type: "text" },
+    { name: "mpesaCheckoutRequestId", type: "text", index: true },
+    { name: "mpesaReceipt", type: "text" },
     { name: "subtotal", type: "number", required: true },
     { name: "tax", type: "number", defaultValue: 0 },
     { name: "shippingCost", type: "number", defaultValue: 0 },
     { name: "total", type: "number", required: true },
     { name: "notes", type: "textarea" },
-    { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
     {
       name: "items",
       type: "array",

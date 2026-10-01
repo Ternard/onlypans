@@ -1,8 +1,25 @@
 export const Events = {
   slug: "events",
-  admin: { useAsTitle: "title" },
+  admin: { group: "Shop", useAsTitle: "title" },
   fields: [
     { name: "title", type: "text", required: true },
+    {
+      name: "organizer",
+      type: "text",
+      defaultValue: "Pans & Wine",
+      admin: { description: "Shown as 'Hosted by'. Change it when listing tickets on behalf of another organizer." },
+    },
+    {
+      name: "sellerContact",
+      type: "text",
+      admin: { description: "Private: phone/email of the outside seller to pay out. Never shown on the site." },
+    },
+    {
+      name: "isPublished",
+      type: "checkbox",
+      defaultValue: true,
+      admin: { description: "Untick to hide this event from the Shop without deleting it." },
+    },
     { name: "description", type: "textarea" },
     { name: "eventDate", type: "date", required: true },
     {
@@ -30,6 +47,5 @@ export const Events = {
       type: "text",
       admin: { description: "Used only if no photo is uploaded above." },
     },
-    { name: "brand", type: "select", options: ["only-pans", "pans-and-wine"] },
   ],
 };

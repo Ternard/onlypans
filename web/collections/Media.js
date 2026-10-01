@@ -13,6 +13,6 @@ export const Media = {
     ],
     formatOptions: { format: "webp", options: { quality: 80 } },
   },
-  admin: { useAsTitle: "filename" },
+  admin: { group: "Website", useAsTitle: "filename" },
   fields: [{ name: "alt", type: "text" }],
 };
