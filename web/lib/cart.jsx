@@ -5,6 +5,8 @@ import { createContext, useContext, useMemo, useSyncExternalStore } from "react"
 const CartContext = createContext(null);
 const STORAGE_KEY = "pansandwine-cart";
 let snapshotCache = null;
+const EMPTY = [];
+const getServerSnapshot = () => EMPTY;
 
 function readStore() {
   if (typeof window === "undefined") return [];
@@ -41,7 +43,7 @@ function subscribe(callback) {
 }
 
 export function CartProvider({ children }) {
-  const items = useSyncExternalStore(subscribe, getSnapshot, () => []);
+  const items = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const api = useMemo(
     () => ({

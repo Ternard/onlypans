@@ -43,3 +43,6 @@ web/media/
 *.sqlite
 *.h2.db
 *.mv.db
+
+.vercel
+.env*

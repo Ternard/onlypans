@@ -110,7 +110,8 @@ export async function POST(request, { params }) {
     });
     await payload.update({ collection: "event-bookings", id: booking.id, data: { mpesaCheckoutRequestId: CheckoutRequestID } });
     return apiResponse(true, "Check your phone to complete payment", { ...booking, mpesa: true });
-  } catch {
+  } catch (err) {
+    console.error("event purchase failed:", err);
     if (reservation) {
       await releaseReservation(pool, reservation.table, reservation.id, quantity);
     }
